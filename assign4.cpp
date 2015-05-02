@@ -12,6 +12,7 @@
 #include <iostream>
 #include <conio.h>
 #include <iomanip>
+#include <string>
 using namespace std;
 
 
@@ -171,7 +172,13 @@ void showTeach(){
 	// TODO 1: display the course_ID, course_name, offering_no, classroom, no_of_stds, and credits of all the courses he/she is teaching in the current semester (assume the current semester is Spring2014).
 	// for the expect behaviour of this part please refer to the executable program
 	// Add your code here
-
+	char C_staffid = staff_id + '0';
+	// The sql statement should be "select from course C, offering O, "
+	string SQL_statement = "select C.course_ID, C.course_name, O.offering_no, O.classroom, O.no_of_stds "
+							+ "from course C, offering O "
+							+ "where C.course_ID = O.course_ID and O.YearSemester = " + "Spring2014" + "and O.staff_id = " + C_staffid + ";";
+	SQLExecDirectA(hstmt, (SQLCHAR *)SQL_statement, SQL_NTS);
+	printIntoRow(hstmt);
 	system("pause");
 
 }
@@ -180,18 +187,23 @@ void showLead(){
 	SQLAllocStmt(hdbc, &hstmt);
 	char query[1000];
 	char currentSem[100]="Spring2014";
-
+	
 	system("CLS");
 	cout<<"Here are the courses you are leading in the current semester:\n";
 	cout<<"-------------------------------------------------------------\n";
 
 	// TODO 2: display the course_ID, course_name, offering_no, classroom, no_of_stds, and credits of the course he/she is leading in the current semester (assume the current semester is Spring2014)
 	// Add your code here
-
+	// The sql statement should be "select C.course_name, O.course_ID, O.offering_no, O.classroom, O.no_of_stds from offering O, course C where O.course_ID = C.course_ID and O.YearSemester = Spring2014 and O.staff_id = <staff_id>"
+	char C_staffid = staff_id + '0';
+	string SQL_statement = "select C.course_ID, C.course_name, O.offering_no, O.classroom, O.no_of_stds "
+		+ "from course C, offering O "
+		+ "where C.course_ID = O.course_ID and O.YearSemester = " + "Spring2014" + "and O.staff_id = " + C_staffid + ";";
+	SQLExecDirectA(hstmt, (SQLCHAR *)SQL_statement, SQL_NTS);
+	printIntoCol(hstmt);
  	system("pause");
-
-
 }
+
 void showPre(){
 	SQLAllocStmt(hdbc, &hstmt);
 	char query[1000];
@@ -202,10 +214,13 @@ void showPre(){
 	// TODO 3: group the prerequisites (course_IDs) by the course_IDs of the main courses and display the prerequisites (course_ID) in a list. See the screen shot in the assignment output section for the expected output. 
     // Hint: you will find the aggregate function LISTAGG() function useful. You can refer to http://www.oracle-developer.net/display.php?id=515 for the exact syntax of LISTAGG().
 	// Add your code here
-
+	// sql code "select main_course_ID as main_course, listagg(prereq_course_ID, ', ') within group (order by prereq_course_ID) as prerequisite_list
+	//			 from prerequisite group by main_course_ID;"
+	string SQL_statement = "select main_course_ID, listagg(prereq_course_ID, ', ') within group (order by prereq_course_ID) as prerequisite_list "
+							+ "from prerequisite group by main_course_ID;";
+	SQLExecDirectA(hstmt, (SQLCHAR *)SQL_statement, SQL_NTS);
+	printIntoRow(hstmt);
 	system("pause");
-
-
 }
 
 
@@ -260,6 +275,17 @@ void showSuper(){
 
 	// TODO 4: display all the student_ID, last_name, first_name, phone of all the students the professor supervises.
 	// Add your code here
+	// SQL code: select TA.student_ID, TA.last_name, TA.first_name, TA.phone
+	//			 from TA, supervise
+	//			 where supervise.student_ID = TA.student_ID
+	//			 and supervise.staff_ID = <staff_ID>
+	char C_staffid = staff_id + '0';
+	string SQL_statement = "select TA.student_ID, TA.last_name, TA.first_name, TA.phone "
+		+ "from TA, supervise "
+		+ "where supervise.student_ID = TA.student_ID "
+		+ "and supervise.staff_ID = " + C_staffid + ";";
+	SQLExecDirectA(hstmt, (SQLCHAR *)SQL_statement, SQL_NTS);
+	printIntoRow(hstmt);
 	system("pause");
 }
 
@@ -275,7 +301,14 @@ void showSuperGroup(){
 	// TODO 5: group the students (student_ID, last_name, first_name) according to the supervisors' staff_IDs, and display the student information in a list in ascending order of the student_IDs, 
 	// see the screen shot for the exact output. Hint: you may find the LISTAGG() function and the concatenation operator are useful. 
 	// Add your code here
-
+	string SQL_statement = "select s.staff_ID, p.last_name, p.first_name, "
+		+ "listagg(t.student_ID || ' ' || t.last_name || ' ' || t.first_name, ',') "
+		+ "within group (order by t.student_ID) as students "
+		+ "from supervise s, prof p, TA t "
+		+ "where s.staff_ID = p.staff_ID and s.student_ID = t.student_ID "
+		+ "group by s.staff_ID, p.last_name, p.first_name;";
+	SQLExecDirectA(hstmt, (SQLCHAR *)SQL_statement, SQL_NTS);
+	printIntoRow(hstmt);
 	system("pause");
 
 }
