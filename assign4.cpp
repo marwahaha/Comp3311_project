@@ -1,3 +1,6 @@
+// ppp.cpp : Defines the entry point for the console application.
+//
+
 // comp3311-project.cpp : Defines entry point for the console application.
 // No marks will be given if we can't compile your file
 // No marks will be given if the SQL statement is fundementally incorrect and no partial credits will be given
@@ -172,15 +175,16 @@ void showTeach(){
 	// TODO 1: display the course_ID, course_name, offering_no, classroom, no_of_stds, and credits of all the courses he/she is teaching in the current semester (assume the current semester is Spring2014).
 	// for the expect behaviour of this part please refer to the executable program
 	// Add your code here
-	char C_staffid = staff_id + '0';
+	//char C_staffid = staff_id + '0';
 	// The sql statement should be "select from course C, offering O, "
-	string SQL_statement = "select C.course_ID, C.course_name, O.offering_no, O.classroom, O.no_of_stds "
-							+ "from course C, offering O "
-							+ "where C.course_ID = O.course_ID and O.YearSemester = " + "Spring2014" + "and O.staff_id = " + C_staffid + ";";
-	SQLExecDirectA(hstmt, (SQLCHAR *)SQL_statement, SQL_NTS);
-	printIntoRow(hstmt);
-	system("pause");
+	//string SQL_statement = "select C.course_ID, C.course_name, O.offering_no, O.classroom, O.no_of_stds "
+	//						+ "from course C, offering O "
+	//						+ "where C.course_ID = O.course_ID and O.YearSemester = " + "Spring2014" + "and O.staff_id = " + C_staffid + ";";
 
+	sprintf_s(query, "Select C.course_ID as \"Course ID\", C.course_name as \"Course name\", O.offering_no as \"Offering number\", O.classroom as \"Classroom\", O.no_of_stds as \"Number of students\" from prof_teach pt, course C, offering O where C.course_ID = pt.course_ID and O.offering_no = pt.offering_no and O.course_id = C.course_id and O.YearSemester = \'%s\' and pt.staff_id = %d", currentSem, staff_id);
+	ret = SQLExecDirectA(hstmt, (SQLCHAR *)query, SQL_NTS);
+	printIntoRow(hstmt, 15);
+	system("pause");
 }
 
 void showLead(){
@@ -195,12 +199,13 @@ void showLead(){
 	// TODO 2: display the course_ID, course_name, offering_no, classroom, no_of_stds, and credits of the course he/she is leading in the current semester (assume the current semester is Spring2014)
 	// Add your code here
 	// The sql statement should be "select C.course_name, O.course_ID, O.offering_no, O.classroom, O.no_of_stds from offering O, course C where O.course_ID = C.course_ID and O.YearSemester = Spring2014 and O.staff_id = <staff_id>"
-	char C_staffid = staff_id + '0';
-	string SQL_statement = "select C.course_ID, C.course_name, O.offering_no, O.classroom, O.no_of_stds "
-		+ "from course C, offering O "
-		+ "where C.course_ID = O.course_ID and O.YearSemester = " + "Spring2014" + "and O.staff_id = " + C_staffid + ";";
-	SQLExecDirectA(hstmt, (SQLCHAR *)SQL_statement, SQL_NTS);
-	printIntoCol(hstmt);
+	//char C_staffid = staff_id + '0';
+	//string SQL_statement = "select C.course_ID, C.course_name, O.offering_no, O.classroom, O.no_of_stds "
+	//	+ "from course C, offering O "
+	//	+ "where C.course_ID = O.course_ID and O.YearSemester = " + "Spring2014" + "and O.staff_id = " + C_staffid + ";";
+	sprintf_s(query, "select C.course_id as \"Course ID\", C.course_name as \"Course Name\", O.offering_no as \"Offering Number\", O.classroom as \"Classroom\", O.no_of_stds as \"Number of Students\" from course C, offering O where C.course_ID = O.course_ID and O.YearSemester = \'%s\' and O.staff_id = %d", currentSem, staff_id);
+	ret = SQLExecDirectA(hstmt, (SQLCHAR *)query, SQL_NTS);
+	printRecordIntoCol(hstmt);
  	system("pause");
 }
 
@@ -216,10 +221,11 @@ void showPre(){
 	// Add your code here
 	// sql code "select main_course_ID as main_course, listagg(prereq_course_ID, ', ') within group (order by prereq_course_ID) as prerequisite_list
 	//			 from prerequisite group by main_course_ID;"
-	string SQL_statement = "select main_course_ID, listagg(prereq_course_ID, ', ') within group (order by prereq_course_ID) as prerequisite_list "
-							+ "from prerequisite group by main_course_ID;";
-	SQLExecDirectA(hstmt, (SQLCHAR *)SQL_statement, SQL_NTS);
-	printIntoRow(hstmt);
+	//string SQL_statement = "select main_course_ID, listagg(prereq_course_ID, ', ') within group (order by prereq_course_ID) as prerequisite_list "
+	//						+ "from prerequisite group by main_course_ID;";
+	sprintf_s(query, "select main_course_ID as \"Main Course\", listagg(prereq_course_ID, ', ') within group (order by prereq_course_ID) as \"Prerequisite list\" from prerequisite group by main_course_ID");	
+	ret = SQLExecDirectA(hstmt, (SQLCHAR *)query, SQL_NTS);
+	printIntoRow(hstmt, 15);
 	system("pause");
 }
 
@@ -279,13 +285,14 @@ void showSuper(){
 	//			 from TA, supervise
 	//			 where supervise.student_ID = TA.student_ID
 	//			 and supervise.staff_ID = <staff_ID>
-	char C_staffid = staff_id + '0';
-	string SQL_statement = "select TA.student_ID, TA.last_name, TA.first_name, TA.phone "
-		+ "from TA, supervise "
-		+ "where supervise.student_ID = TA.student_ID "
-		+ "and supervise.staff_ID = " + C_staffid + ";";
-	SQLExecDirectA(hstmt, (SQLCHAR *)SQL_statement, SQL_NTS);
-	printIntoRow(hstmt);
+	//char C_staffid = staff_id + '0';
+	//string SQL_statement = "select TA.student_ID, TA.last_name, TA.first_name, TA.phone "
+	//	+ "from TA, supervise "
+	//	+ "where supervise.student_ID = TA.student_ID "
+	//	+ "and supervise.staff_ID = " + C_staffid + ";";
+	sprintf_s(query, "select TA.student_ID as \"Student ID\", TA.last_name as \"Last Name\", TA.first_name as \"First Name\", TA.phone as \"Phone number\" from TA, supervise where supervise.student_ID = TA.student_ID and supervise.staff_ID = %d", staff_id);
+	ret = SQLExecDirectA(hstmt, (SQLCHAR *)query, SQL_NTS);
+	printIntoRow(hstmt,15);
 	system("pause");
 }
 
@@ -301,14 +308,15 @@ void showSuperGroup(){
 	// TODO 5: group the students (student_ID, last_name, first_name) according to the supervisors' staff_IDs, and display the student information in a list in ascending order of the student_IDs, 
 	// see the screen shot for the exact output. Hint: you may find the LISTAGG() function and the concatenation operator are useful. 
 	// Add your code here
-	string SQL_statement = "select s.staff_ID, p.last_name, p.first_name, "
-		+ "listagg(t.student_ID || ' ' || t.last_name || ' ' || t.first_name, ',') "
-		+ "within group (order by t.student_ID) as students "
-		+ "from supervise s, prof p, TA t "
-		+ "where s.staff_ID = p.staff_ID and s.student_ID = t.student_ID "
-		+ "group by s.staff_ID, p.last_name, p.first_name;";
-	SQLExecDirectA(hstmt, (SQLCHAR *)SQL_statement, SQL_NTS);
-	printIntoRow(hstmt);
+	//string SQL_statement = "select s.staff_ID, p.last_name, p.first_name, "
+	//	+ "listagg(t.student_ID || ' ' || t.last_name || ' ' || t.first_name, ',') "
+	//	+ "within group (order by t.student_ID) as students "
+	//	+ "from supervise s, prof p, TA t "
+	//	+ "where s.staff_ID = p.staff_ID and s.student_ID = t.student_ID "
+	//	+ "group by s.staff_ID, p.last_name, p.first_name;";
+	sprintf_s(query, "select s.staff_ID as \"Professor staff ID\", p.last_name as \"Last Name\", p.first_name as \"First Name\", listagg(t.student_ID || ' ' || t.last_name || ' ' || t.first_name, ', ') within group (order by t.student_ID) as \"Supervising students\" from supervise s, prof p, TA t where s.staff_ID = p.staff_ID and s.student_ID = t.student_ID group by s.staff_ID, p.last_name, p.first_name");
+	ret = SQLExecDirectA(hstmt, (SQLCHAR *)query, SQL_NTS);
+	printIntoRow(hstmt,30);
 	system("pause");
 
 }
@@ -377,13 +385,18 @@ void changePassword(){
 	// TODO 6: Update the database for prof. password.
 	// for the expect behaviour of this part please refer to the executable program
 	// Add your code here
-	char C_staffid = staff_id + '0';
-	string C_pwd(newPassword);
+	//char C_staffid = staff_id + '0';
+	//string C_pwd(newPassword);
 	// SQL statment should be  update prof set password = <newPassword> where staff_id = <staff_id>
-	string SQL_statement = "update prof "
-		+ "set password = " + C_pwd
-		+ " where staff_id = " + C_staff_id + ";";
-	SQLExecDirectA(hstmt, (SQLCHAR *)SQL_statement, SQL_NTS);
+	//string SQL_statement = "update prof "
+	//	+ "set password = " + C_pwd
+	//	+ " where staff_id = " + C_staff_id + ";";
+	if (strlen(newPassword) <= 10) {
+		sprintf_s(query, "update prof set password = \'%s\' where staff_id = %d", newPassword, staff_id);	
+		ret = SQLExecDirectA(hstmt, (SQLCHAR *)query, SQL_NTS);
+	} else {
+		cout << "Password update unsuccessful." << endl;
+	}
 	system("pause");
 }
 
@@ -397,17 +410,14 @@ void addPhone(){
 	// for the expect behaviour of this part please refer to the executable program
 	// Add your code here
 	// SQL statement should be  insert into prof_phone values (a,b);
-	char C_staffid = staff_id + '0';
-	string C_np;
-	while (newPhone) {
-		C_np += (newPhone % 10 + '0');
-		newPhone /= 10;
+	//reverse(C_np.begin(), C_np.end());
+	if (newPhone >= 100000000) {
+		cout << "Unable to add a new phone number" << endl;
+	} else {
+		sprintf_s(query, "insert into prof_phone values (%d, %d)", staff_id, newPhone);
+		ret = SQLExecDirectA(hstmt, (SQLCHAR *)query, SQL_NTS);
 	}
-	reverse(C_np.begin(), C_np.end());
-	string SQL_statement = "insert into prof_phone values (" + C_staffid + "," + C_np + ");";
-	SQLExecDirectA(hstmt, (SQLCHAR *)SQL_statement, SQL_NTS);
 	system("pause");
-
 }
 
 void showCourseTA(){
@@ -424,14 +434,16 @@ void showCourseTA(){
 	// sql statement: select ta.course_ID, c.course_name, ta.offering_no, ta.last_name, ta.first_name, ta.phone 
 	//				  from prof_teach pt, TA ta, course c, offering o 
 	//					where c.course_ID = pt.course_ID and pt.offering_no = ta.offering_no and pt.course_ID = ta.course_ID and o.offering_no = ta.offering_no and o.YearSemester = 'Spring2014' and pt.staff_ID = 2;
-	char C_staffid = staff_id + '0';
-	string sem(currentSem);
-	string SQL_statement = "select ta.course_ID, c.course_name, ta.offering_no, ta.last_name, ta.first_name, ta.phone "
-		+ "from prof_teach pt, TA ta, course c, offering o "
-		+ "where c.course_ID = pt.course_ID and pt.offering_no = ta.offering_no and pt.course_ID = ta.course_ID and o.offering_no = ta.offering_no and o.YearSemester = '"
-		+ sem + "' adn pt.staff_ID = " + C_staffid + ";";
-	SQLExecDirectA(hstmt, (SQLCHAR *)SQL_statement, SQL_NTS);
-	printIntoRow(hstmt);
+	//char C_staffid = staff_id + '0';
+	//string sem(currentSem);
+	//string SQL_statement = "select ta.course_ID, c.course_name, ta.offering_no, ta.last_name, ta.first_name, ta.phone "
+	//	+ "from prof_teach pt, TA ta, course c, offering o "
+	//	+ "where c.course_ID = pt.course_ID and pt.offering_no = ta.offering_no and pt.course_ID = ta.course_ID and o.offering_no = ta.offering_no and o.YearSemester = '"
+	//	+ sem + "' adn pt.staff_ID = " + C_staffid + ";";
+	
+	sprintf_s(query, "select ta.course_ID as \"Course ID\", c.course_name as \"Course name\", ta.offering_no as \"Offering number\", ta.student_ID as \"TA student ID\", ta.last_name as \"TA Last Name\", ta.first_name as \"TA First Name\", ta.phone as \"TA phone\"from prof_teach pt, TA ta, course c, offering o where c.course_ID = pt.course_ID and pt.offering_no = ta.offering_no and pt.course_ID = ta.course_ID and o.offering_no = ta.offering_no and o.YearSemester = \'%s\' and pt.staff_id = %d", currentSem, staff_id);
+	ret = SQLExecDirectA(hstmt, (SQLCHAR *)query, SQL_NTS);
+	printIntoRow(hstmt,15);
 	system("pause");
 
 }
@@ -448,14 +460,15 @@ void showTAPref(){
 	// TODO 9: display the lists of all the preferred offerings (course_ID, offering_no) for all the TAs, group the result by the TAs?student_IDs. 
     // Hint: you will find the aggregate function LISTAGG() function useful.
 	// Add your code here
-	string sem(currentSem);
-	string SQL_statement = "select ta.student_id, ta.last_name, ta.first_name, listagg (po.course_id|| ' ' ||po.offering_no) "
-		+ "within group (order by po.course_id) as pref_list "
-		+ "from TA ta, pref_offering po, offering o "
-		+ "where ta.student_ID = po.student_ID and ta.offering_no = o.offering_no and o.YearSemester = '" + sem + "' "
-		+ "group by ta.student_id, ta.last_name, ta.first_name;";
-	SQLExecDirectA(hstmt, (SQLCHAR *)SQL_statement, SQL_NTS);
-	printIntoRow(hstmt);
+	//string sem(currentSem);
+	//string SQL_statement = "select ta.student_id, ta.last_name, ta.first_name, listagg (po.course_id|| ' ' ||po.offering_no) "
+	//	+ "within group (order by po.course_id) as pref_list "
+	//	+ "from TA ta, pref_offering po, offering o "
+	//	+ "where ta.student_ID = po.student_ID and ta.offering_no = o.offering_no and o.YearSemester = '" + sem + "' "
+	//	+ "group by ta.student_id, ta.last_name, ta.first_name;";
+	sprintf_s(query, "select ta.student_id as \"TA student ID\", ta.last_name as \"Last Name\", ta.first_name as \"First Name\", listagg(po.course_id || ' ' || po.offering_no, ', ') within group (order by po.course_id) as \"Preference list\" from TA ta, pref_offering po, offering o where ta.student_ID = po.student_ID and ta.offering_no = o.offering_no group by ta.student_id, ta.last_name, ta.first_name");
+	ret = SQLExecDirectA(hstmt, (SQLCHAR *)query, SQL_NTS);
+	printIntoRow(hstmt,15);
 	system("pause");
 }
 
@@ -523,7 +536,7 @@ boolean userLogin(){
 			//staff_id.
 		
 			SQLAllocStmt(hdbc, &hstmt);
-			sprintf(query,"select user_name, password, staff_id from prof where user_name=\'%s\'",inputUsername);
+			sprintf_s(query,"select user_name, password, staff_id from prof where user_name=\'%s\'",inputUsername);
 			SQLExecDirectA(hstmt, (SQLCHAR *)query, SQL_NTS);
 			SQLBindCol(hstmt,1,SQL_C_CHAR,username,20,&cbUsername);
 			SQLBindCol(hstmt,2,SQL_C_CHAR,password,11,&cbPassword);
@@ -715,3 +728,4 @@ SQLCHAR*** printIntoRow(HSTMT stmt, int maxColumnWidth){
    
    return result;
 }
+
