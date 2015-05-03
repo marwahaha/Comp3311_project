@@ -399,6 +399,7 @@ void changePassword(){
 	if (strlen(newPassword) <= 10) {
 		sprintf_s(query, "update prof set password = \'%s\' where staff_id = %d", newPassword, staff_id);	
 		ret = SQLExecDirectA(hstmt, (SQLCHAR *)query, SQL_NTS);
+		cout << "Password updated" << endl;
 		SQLFreeStmt(hstmt, SQL_CLOSE);
 	} else {
 		cout << "Password update unsuccessful." << endl;
@@ -422,6 +423,7 @@ void addPhone(){
 	} else {
 		sprintf_s(query, "insert into prof_phone values (%d, %d)", staff_id, newPhone);
 		ret = SQLExecDirectA(hstmt, (SQLCHAR *)query, SQL_NTS);
+		cout << "New Phone number added." << endl;
 		SQLFreeStmt(hstmt, SQL_CLOSE);
 	}
 	system("pause");
