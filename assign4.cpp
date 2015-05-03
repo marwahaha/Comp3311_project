@@ -377,9 +377,14 @@ void changePassword(){
 	// TODO 6: Update the database for prof. password.
 	// for the expect behaviour of this part please refer to the executable program
 	// Add your code here
-	
+	char C_staffid = staff_id + '0';
+	string C_pwd(newPassword);
+	// SQL statment should be  update prof set password = <newPassword> where staff_id = <staff_id>
+	string SQL_statement = "update prof "
+		+ "set password = " + C_pwd
+		+ " where staff_id = " + C_staff_id + ";";
+	SQLExecDirectA(hstmt, (SQLCHAR *)SQL_statement, SQL_NTS);
 	system("pause");
-
 }
 
 void addPhone(){
@@ -391,7 +396,16 @@ void addPhone(){
 	// TODO 7:  add a new phone number for the prof. assume user always enter a new phone number so you do not need to check
 	// for the expect behaviour of this part please refer to the executable program
 	// Add your code here
-	
+	// SQL statement should be  insert into prof_phone values (a,b);
+	char C_staffid = staff_id + '0';
+	string C_np;
+	while (newPhone) {
+		C_np += (newPhone % 10 + '0');
+		newPhone /= 10;
+	}
+	reverse(C_np.begin(), C_np.end());
+	string SQL_statement = "insert into prof_phone values (" + C_staffid + "," + C_np + ");";
+	SQLExecDirectA(hstmt, (SQLCHAR *)SQL_statement, SQL_NTS);
 	system("pause");
 
 }
@@ -407,7 +421,17 @@ void showCourseTA(){
 	
 	// TODO 8: displays the student_ID, last_name, first_name, and phone number for each TA of the course offerings he/she teaches in the current semester (assume the current semester is Spring2014).
 	// Add your code here
-
+	// sql statement: select ta.course_ID, c.course_name, ta.offering_no, ta.last_name, ta.first_name, ta.phone 
+	//				  from prof_teach pt, TA ta, course c, offering o 
+	//					where c.course_ID = pt.course_ID and pt.offering_no = ta.offering_no and pt.course_ID = ta.course_ID and o.offering_no = ta.offering_no and o.YearSemester = 'Spring2014' and pt.staff_ID = 2;
+	char C_staffid = staff_id + '0';
+	string sem(currentSem);
+	string SQL_statement = "select ta.course_ID, c.course_name, ta.offering_no, ta.last_name, ta.first_name, ta.phone "
+		+ "from prof_teach pt, TA ta, course c, offering o "
+		+ "where c.course_ID = pt.course_ID and pt.offering_no = ta.offering_no and pt.course_ID = ta.course_ID and o.offering_no = ta.offering_no and o.YearSemester = '"
+		+ sem + "' adn pt.staff_ID = " + C_staffid + ";";
+	SQLExecDirectA(hstmt, (SQLCHAR *)SQL_statement, SQL_NTS);
+	printIntoRow(hstmt);
 	system("pause");
 
 }
@@ -424,7 +448,14 @@ void showTAPref(){
 	// TODO 9: display the lists of all the preferred offerings (course_ID, offering_no) for all the TAs, group the result by the TAs?student_IDs. 
     // Hint: you will find the aggregate function LISTAGG() function useful.
 	// Add your code here
-
+	string sem(currentSem);
+	string SQL_statement = "select ta.student_id, ta.last_name, ta.first_name, listagg (po.course_id|| ' ' ||po.offering_no) "
+		+ "within group (order by po.course_id) as pref_list "
+		+ "from TA ta, pref_offering po, offering o "
+		+ "where ta.student_ID = po.student_ID and ta.offering_no = o.offering_no and o.YearSemester = '" + sem + "' "
+		+ "group by ta.student_id, ta.last_name, ta.first_name;";
+	SQLExecDirectA(hstmt, (SQLCHAR *)SQL_statement, SQL_NTS);
+	printIntoRow(hstmt);
 	system("pause");
 }
 
