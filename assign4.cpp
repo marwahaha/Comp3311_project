@@ -184,6 +184,7 @@ void showTeach(){
 	sprintf_s(query, "Select C.course_ID as \"Course ID\", C.course_name as \"Course name\", O.offering_no as \"Offering number\", O.classroom as \"Classroom\", O.no_of_stds as \"Number of students\" from prof_teach pt, course C, offering O where C.course_ID = pt.course_ID and O.offering_no = pt.offering_no and O.course_id = C.course_id and O.YearSemester = \'%s\' and pt.staff_id = %d", currentSem, staff_id);
 	ret = SQLExecDirectA(hstmt, (SQLCHAR *)query, SQL_NTS);
 	printIntoRow(hstmt, 15);
+	SQLFreeStmt(hstmt, SQL_CLOSE);
 	system("pause");
 }
 
@@ -206,6 +207,7 @@ void showLead(){
 	sprintf_s(query, "select C.course_id as \"Course ID\", C.course_name as \"Course Name\", O.offering_no as \"Offering Number\", O.classroom as \"Classroom\", O.no_of_stds as \"Number of Students\" from course C, offering O where C.course_ID = O.course_ID and O.YearSemester = \'%s\' and O.staff_id = %d", currentSem, staff_id);
 	ret = SQLExecDirectA(hstmt, (SQLCHAR *)query, SQL_NTS);
 	printRecordIntoCol(hstmt);
+	SQLFreeStmt(hstmt, SQL_CLOSE);
  	system("pause");
 }
 
@@ -226,6 +228,7 @@ void showPre(){
 	sprintf_s(query, "select main_course_ID as \"Main Course\", listagg(prereq_course_ID, ', ') within group (order by prereq_course_ID) as \"Prerequisite list\" from prerequisite group by main_course_ID");	
 	ret = SQLExecDirectA(hstmt, (SQLCHAR *)query, SQL_NTS);
 	printIntoRow(hstmt, 15);
+	SQLFreeStmt(hstmt, SQL_CLOSE);
 	system("pause");
 }
 
@@ -293,6 +296,7 @@ void showSuper(){
 	sprintf_s(query, "select TA.student_ID as \"Student ID\", TA.last_name as \"Last Name\", TA.first_name as \"First Name\", TA.phone as \"Phone number\" from TA, supervise where supervise.student_ID = TA.student_ID and supervise.staff_ID = %d", staff_id);
 	ret = SQLExecDirectA(hstmt, (SQLCHAR *)query, SQL_NTS);
 	printIntoRow(hstmt,15);
+	SQLFreeStmt(hstmt, SQL_CLOSE);
 	system("pause");
 }
 
@@ -317,6 +321,7 @@ void showSuperGroup(){
 	sprintf_s(query, "select s.staff_ID as \"Professor staff ID\", p.last_name as \"Last Name\", p.first_name as \"First Name\", listagg(t.student_ID || ' ' || t.last_name || ' ' || t.first_name, ', ') within group (order by t.student_ID) as \"Supervising students\" from supervise s, prof p, TA t where s.staff_ID = p.staff_ID and s.student_ID = t.student_ID group by s.staff_ID, p.last_name, p.first_name");
 	ret = SQLExecDirectA(hstmt, (SQLCHAR *)query, SQL_NTS);
 	printIntoRow(hstmt,30);
+	SQLFreeStmt(hstmt, SQL_CLOSE);
 	system("pause");
 
 }
@@ -394,6 +399,7 @@ void changePassword(){
 	if (strlen(newPassword) <= 10) {
 		sprintf_s(query, "update prof set password = \'%s\' where staff_id = %d", newPassword, staff_id);	
 		ret = SQLExecDirectA(hstmt, (SQLCHAR *)query, SQL_NTS);
+		SQLFreeStmt(hstmt, SQL_CLOSE);
 	} else {
 		cout << "Password update unsuccessful." << endl;
 	}
@@ -416,6 +422,7 @@ void addPhone(){
 	} else {
 		sprintf_s(query, "insert into prof_phone values (%d, %d)", staff_id, newPhone);
 		ret = SQLExecDirectA(hstmt, (SQLCHAR *)query, SQL_NTS);
+		SQLFreeStmt(hstmt, SQL_CLOSE);
 	}
 	system("pause");
 }
@@ -444,6 +451,7 @@ void showCourseTA(){
 	sprintf_s(query, "select ta.course_ID as \"Course ID\", c.course_name as \"Course name\", ta.offering_no as \"Offering number\", ta.student_ID as \"TA student ID\", ta.last_name as \"TA Last Name\", ta.first_name as \"TA First Name\", ta.phone as \"TA phone\"from prof_teach pt, TA ta, course c, offering o where c.course_ID = pt.course_ID and pt.offering_no = ta.offering_no and pt.course_ID = ta.course_ID and o.offering_no = ta.offering_no and o.YearSemester = \'%s\' and pt.staff_id = %d", currentSem, staff_id);
 	ret = SQLExecDirectA(hstmt, (SQLCHAR *)query, SQL_NTS);
 	printIntoRow(hstmt,15);
+	SQLFreeStmt(hstmt, SQL_CLOSE);
 	system("pause");
 
 }
@@ -469,6 +477,7 @@ void showTAPref(){
 	sprintf_s(query, "select ta.student_id as \"TA student ID\", ta.last_name as \"Last Name\", ta.first_name as \"First Name\", listagg(po.course_id || ' ' || po.offering_no, ', ') within group (order by po.course_id) as \"Preference list\" from TA ta, pref_offering po, offering o where ta.student_ID = po.student_ID and ta.offering_no = o.offering_no group by ta.student_id, ta.last_name, ta.first_name");
 	ret = SQLExecDirectA(hstmt, (SQLCHAR *)query, SQL_NTS);
 	printIntoRow(hstmt,15);
+	SQLFreeStmt(hstmt, SQL_CLOSE);
 	system("pause");
 }
 
