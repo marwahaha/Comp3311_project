@@ -10,3 +10,9 @@ I cannot say this project is difficult or have high workload, but it's useful fo
 #### 2015/5/2 22:53 Update ####
 todo2: Doubt what's the meaning of lead.
 finish first 5 todos, feel easy.
+
+
+##### Personal Website: http://oh233.com
+##### Personal notes website: http://notes.oh233.com
+##### Zhihu: http://www.zhihu.com/people/qi-hao-zhi-65
+##### Contact: nevermrqi@gmail.com
