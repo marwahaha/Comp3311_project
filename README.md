@@ -3,7 +3,7 @@ This file is rather a assignment than a project. Only hundreds of lines code and
 
 But this include basic things we need to do when we want to connect C++ program to database system. I used to it using PHP and CI framework and wondered how can I do this in real C++ project. Here give me the answer.
 
-The steps for connecting database, execute sql statement, free statement handle is all included in this small file. I won't abondon it after I finish it, instead, I will come to review it in this summer holiday.
+The steps for connecting database, execute sql statement, free statement handle is all included in this small file. I won't abandon it after I finish it, instead, I will come to review it in this summer holiday.
 
 I cannot say this project is difficult or have high workload, but it's useful for beginners as me.
 
